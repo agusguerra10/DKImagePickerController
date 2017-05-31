@@ -91,7 +91,6 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
     func addTopContainerView() {
         let width = UIScreen.main.bounds.width
         topContainerView = UIView(frame: CGRect(x: 0, y: 0, width: width, height: width));
-        topContainerView.backgroundColor = UIColor.red
         self.view.addSubview(topContainerView)
     }
     
