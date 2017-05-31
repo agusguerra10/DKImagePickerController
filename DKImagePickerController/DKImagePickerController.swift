@@ -241,13 +241,6 @@ open class DKImagePickerController : UINavigationController {
         getImageManager().autoDownloadWhenAssetIsInCloud = self.autoDownloadWhenAssetIsInCloud
     }
     
-    public func topContainerView() -> UIView? {
-        if let rootVC = self.viewControllers.first as? DKAssetGroupDetailVC {
-            return rootVC.topContainerView
-        }
-        return nil
-    }
-    
     deinit {
         NotificationCenter.default.removeObserver(self)
         getImageManager().invalidate()
@@ -258,7 +251,7 @@ open class DKImagePickerController : UINavigationController {
     }
     
     private var hasInitialized = false
-    public var showsTopController: Bool = false
+    public var topContainerView: UIView? = nil
     override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -278,7 +271,7 @@ open class DKImagePickerController : UINavigationController {
             } else {
                 self.isNavigationBarHidden = false
                 let rootVC = DKAssetGroupDetailVC()
-                rootVC.showsTopController = self.showsTopController
+                rootVC.topContainerView = self.topContainerView
                 rootVC.imagePickerController = self
                 
                 self.UIDelegate.prepareLayout(self, vc: rootVC)

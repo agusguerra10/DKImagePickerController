@@ -41,9 +41,8 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
     }()
 		
     internal var collectionView: UICollectionView!
-    internal var topContainerView: UIView!
     internal weak var imagePickerController: DKImagePickerController!
-    internal var showsTopController: Bool = false
+    internal var topContainerView: UIView? = nil
     private var selectedGroupId: String?
 	private var groupListVC: DKAssetGroupListVC!
     private var hidesCamera: Bool = false
@@ -67,9 +66,7 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        if (self.showsTopController) {
-            self.addTopContainerView()
-        }
+        self.addTopContainerView()
 		
 		let layout = self.imagePickerController.UIDelegate.layoutForImagePickerController(self.imagePickerController).init()
         self.collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
@@ -89,9 +86,11 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
     }
     
     func addTopContainerView() {
-        let width = UIScreen.main.bounds.width
-        topContainerView = UIView(frame: CGRect(x: 0, y: 0, width: width, height: width));
-        self.view.addSubview(topContainerView)
+        if let topContainerView = self.topContainerView {
+            let width = UIScreen.main.bounds.width
+            topContainerView.frame = CGRect(x: 0, y: 0, width: width, height: width);
+            self.view.addSubview(topContainerView)
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -104,7 +103,7 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
 		super.viewDidLayoutSubviews()
         
         var offsetHeight = CGFloat(0)
-        if (topContainerView != nil) {
+        if let topContainerView = self.topContainerView {
             offsetHeight = topContainerView.frame.height
         }
 		
