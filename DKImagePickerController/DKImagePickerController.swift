@@ -241,6 +241,13 @@ open class DKImagePickerController : UINavigationController {
         getImageManager().autoDownloadWhenAssetIsInCloud = self.autoDownloadWhenAssetIsInCloud
     }
     
+    public func topContainerView() -> UIView? {
+        if let rootVC = self.viewControllers.first as? DKAssetGroupDetailVC {
+            return rootVC.topContainerView
+        }
+        return nil
+    }
+    
     deinit {
         NotificationCenter.default.removeObserver(self)
         getImageManager().invalidate()
