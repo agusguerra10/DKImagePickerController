@@ -251,6 +251,7 @@ open class DKImagePickerController : UINavigationController {
     }
     
     private var hasInitialized = false
+    public var showsTopController: Bool = false
     override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
@@ -270,6 +271,7 @@ open class DKImagePickerController : UINavigationController {
             } else {
                 self.isNavigationBarHidden = false
                 let rootVC = DKAssetGroupDetailVC()
+                rootVC.showsTopController = self.showsTopController
                 rootVC.imagePickerController = self
                 
                 self.UIDelegate.prepareLayout(self, vc: rootVC)

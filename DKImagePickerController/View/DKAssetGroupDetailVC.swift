@@ -41,7 +41,9 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
     }()
 		
     internal var collectionView: UICollectionView!
+    internal var topContainerView: UIView!
     internal weak var imagePickerController: DKImagePickerController!
+    internal var showsTopController: Bool = false
     private var selectedGroupId: String?
 	private var groupListVC: DKAssetGroupListVC!
     private var hidesCamera: Bool = false
@@ -64,9 +66,13 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if (self.showsTopController) {
+            self.addTopContainerView()
+        }
 		
 		let layout = self.imagePickerController.UIDelegate.layoutForImagePickerController(self.imagePickerController).init()
-		self.collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
+        self.collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         self.collectionView.backgroundColor = self.imagePickerController.UIDelegate.imagePickerControllerCollectionViewBackgroundColor()
         self.collectionView.allowsMultipleSelection = true
 		self.collectionView.delegate = self
@@ -82,6 +88,13 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
 		self.checkPhotoPermission()
     }
     
+    func addTopContainerView() {
+        let width = UIScreen.main.bounds.width
+        topContainerView = UIView(frame: CGRect(x: 0, y: 0, width: width, height: width));
+        topContainerView.backgroundColor = UIColor.red
+        self.view.addSubview(topContainerView)
+    }
+    
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         
@@ -90,13 +103,18 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
 	
 	override func viewDidLayoutSubviews() {
 		super.viewDidLayoutSubviews()
+        
+        var offsetHeight = CGFloat(0)
+        if (topContainerView != nil) {
+            offsetHeight = topContainerView.frame.height
+        }
 		
 		if let footerView = self.footerView {
 			footerView.frame = CGRect(x: 0, y: self.view.bounds.height - footerView.bounds.height, width: self.view.bounds.width, height: footerView.bounds.height)
-			self.collectionView.frame = CGRect(x: 0, y: 0, width: self.view.bounds.width, height: self.view.bounds.height - footerView.bounds.height)
+			self.collectionView.frame = CGRect(x: 0, y: offsetHeight, width: self.view.bounds.width, height: self.view.bounds.height - footerView.bounds.height - offsetHeight)
 			
 		} else {
-			self.collectionView.frame = self.view.bounds
+			self.collectionView.frame = CGRect(x: 0, y: offsetHeight, width: self.view.bounds.width, height: self.view.bounds.height - offsetHeight)
 		}
 	}
 	
