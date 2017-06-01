@@ -91,7 +91,7 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
         if let topContainerView = self.topContainerView {
             let width = UIScreen.main.bounds.width
             topContainerView.frame = CGRect(x: 0, y: 0, width: width, height: width);
-            self.view.addSubview(topContainerView)
+            self.view.insertSubview(topContainerView, at: 0)
         }
     }
     

@@ -225,6 +225,15 @@ open class DKImagePickerController : UINavigationController {
         }
     }
     
+    public var topContainerView: UIView? {
+        didSet {
+            if let rootVC = self.viewControllers.first as? DKAssetGroupDetailVC {
+                rootVC.topContainerView = self.topContainerView
+                rootVC.addTopContainerView()
+            }
+        }
+    }
+    
     public var selectedAssets = [DKAsset]()
     
     public convenience init() {
@@ -251,7 +260,6 @@ open class DKImagePickerController : UINavigationController {
     }
     
     private var hasInitialized = false
-    public var topContainerView: UIView? = nil
     override open func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
