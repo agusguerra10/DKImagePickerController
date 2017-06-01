@@ -148,13 +148,15 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
         self.selectedGroupId = groupId
 		self.updateTitleView()
         
-        
-        let firstAssetCellIndex = self.hidesCamera ? 0 : 1
-        if let asset = self.fetchAsset(for: firstAssetCellIndex) {
-            lastSelectedItemIndex = IndexPath(row: firstAssetCellIndex, section: 0)
-            if let highlightCallback = self.imagePickerController.didHighlightImage {
-                // highlight the first cell by default
-                highlightCallback([asset])
+        let group = getImageManager().groupDataManager.fetchGroupWithGroupId(self.selectedGroupId!)
+        if (group.totalCount > 0) {
+            let firstAssetCellIndex = self.hidesCamera ? 0 : 1
+            if let asset = self.fetchAsset(for: firstAssetCellIndex) {
+                lastSelectedItemIndex = IndexPath(row: firstAssetCellIndex, section: 0)
+                if let highlightCallback = self.imagePickerController.didHighlightImage {
+                    // highlight the first cell by default
+                    highlightCallback([asset])
+                }
             }
         }
         
