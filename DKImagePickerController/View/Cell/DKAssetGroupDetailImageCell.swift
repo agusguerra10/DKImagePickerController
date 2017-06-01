@@ -77,6 +77,11 @@ class DKAssetGroupDetailImageCell: DKAssetGroupDetailBaseCell {
             self.checkView.checkLabel.text =  "\(self.index + 1)"
         }
     }
+    override var isCellFocused: Bool {
+        didSet {
+            self.thumbnailImageView.alpha = self.isCellFocused ? 0.5 : 1
+        }
+    }
     
     fileprivate lazy var thumbnailImageView: UIImageView = {
         let thumbnailImageView = UIImageView()

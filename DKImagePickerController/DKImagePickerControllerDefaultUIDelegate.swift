@@ -75,6 +75,10 @@ open class DKImagePickerControllerDefaultUIDelegate: NSObject, DKImagePickerCont
     open func imagePickerController(_ imagePickerController: DKImagePickerController, didDeselectAssets: [DKAsset]) {
         self.updateDoneButtonTitle(self.createDoneButtonIfNeeded())
     }
+    
+    open func imagePickerController(_ imagePickerController: DKImagePickerController, didHighlightAsset: [DKAsset]) {
+
+    }
 	
 	open func imagePickerControllerDidReachMaxLimit(_ imagePickerController: DKImagePickerController) {
         let alert = UIAlertController(title: DKImageLocalizedStringWithKey("maxLimitReached")

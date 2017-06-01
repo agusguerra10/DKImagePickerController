@@ -42,7 +42,7 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
 		
     internal var collectionView: UICollectionView!
     internal weak var imagePickerController: DKImagePickerController!
-    internal var topContainerView: UIView? = nil
+    internal var topContainerView: UIView?
     private var selectedGroupId: String?
 	private var groupListVC: DKAssetGroupListVC!
     private var hidesCamera: Bool = false
@@ -50,6 +50,8 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
     private var currentViewSize: CGSize!
     private var registeredCellIdentifiers = Set<String>()
     private var thumbnailSize = CGSize.zero
+    private var lastSelectedItemIndex: IndexPath?
+    private var selectedIndexPaths = [[String:Any]]()
 	
 	override func viewWillLayoutSubviews() {
 		super.viewWillLayoutSubviews()
@@ -215,6 +217,7 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
 	
     func setup(assetCell cell: DKAssetGroupDetailBaseCell, for indexPath: IndexPath, with asset: DKAsset) {
         cell.asset = asset
+        cell.isCellFocused = lastSelectedItemIndex == indexPath
 		let tag = indexPath.row + 1
 		cell.tag = tag
 		
@@ -280,25 +283,48 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
 		return shouldSelect
     }
     
+    func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
+        let shouldDeselect = lastSelectedItemIndex == indexPath
+        if (!shouldDeselect) {
+            lastSelectedItemIndex = indexPath
+            self.imagePickerController.highlightImage(((collectionView.cellForItem(at: indexPath) as? DKAssetGroupDetailBaseCell)?.asset)!)
+            (collectionView.cellForItem(at: indexPath) as? DKAssetGroupDetailBaseCell)?.isCellFocused = true
+            collectionView.reloadData()
+        }
+        return shouldDeselect
+    }
+    
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         if self.isCameraCell(indexPath: indexPath) {
             if UIImagePickerController.isSourceTypeAvailable(.camera) {
                 self.imagePickerController.presentCamera()
             }
         } else {
+            lastSelectedItemIndex = indexPath
             let selectedAsset = (collectionView.cellForItem(at: indexPath) as? DKAssetGroupDetailBaseCell)?.asset
             self.imagePickerController.selectImage(selectedAsset!)
-            
+            self.imagePickerController.highlightImage(selectedAsset!)
+
             if let cell = collectionView.cellForItem(at: indexPath) as? DKAssetGroupDetailBaseCell {
                 cell.index = self.imagePickerController.selectedAssets.count - 1
+                cell.isCellFocused = true
+                selectedIndexPaths.append(["index": cell.index, "indexPath": indexPath])
             }
+            collectionView.reloadData()
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
-		if let removedAsset = (collectionView.cellForItem(at: indexPath) as? DKAssetGroupDetailBaseCell)?.asset {
+        
+		if let cell = (collectionView.cellForItem(at: indexPath) as? DKAssetGroupDetailBaseCell), let removedAsset = cell.asset {
 			let removedIndex = self.imagePickerController.selectedAssets.index(of: removedAsset)!
-			
+            selectedIndexPaths.remove(at: removedIndex)
+            let firstAssetCellIndex = self.hidesCamera ? 0 : 1
+            lastSelectedItemIndex = selectedIndexPaths.last?["indexPath"] as? IndexPath ?? IndexPath(row: firstAssetCellIndex, section: 0)
+            if let cell = collectionView.cellForItem(at: lastSelectedItemIndex!) as? DKAssetGroupDetailBaseCell, let asset = cell.asset {
+                self.imagePickerController.highlightImage(asset)
+                cell.isCellFocused = true
+            }
 			/// Minimize the number of cycles.
 			let indexPathsForSelectedItems = collectionView.indexPathsForSelectedItems!
 			let indexPathsForVisibleItems = collectionView.indexPathsForVisibleItems
@@ -313,6 +339,7 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
 				}
 			}
 			
+            collectionView.reloadData()
 			self.imagePickerController.deselectImage(removedAsset)
 		}
     }
