@@ -147,6 +147,17 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
         
         self.selectedGroupId = groupId
 		self.updateTitleView()
+        
+        
+        let firstAssetCellIndex = self.hidesCamera ? 0 : 1
+        if let asset = self.fetchAsset(for: firstAssetCellIndex) {
+            lastSelectedItemIndex = IndexPath(row: firstAssetCellIndex, section: 0)
+            if let highlightCallback = self.imagePickerController.didHighlightImage {
+                // highlight the first cell by default
+                highlightCallback([asset])
+            }
+        }
+        
 		self.collectionView!.reloadData()
     }
 	
@@ -287,7 +298,9 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
         let shouldDeselect = lastSelectedItemIndex == indexPath
         if (!shouldDeselect) {
             lastSelectedItemIndex = indexPath
-            self.imagePickerController.highlightImage(((collectionView.cellForItem(at: indexPath) as? DKAssetGroupDetailBaseCell)?.asset)!)
+            if let cell = collectionView.cellForItem(at: indexPath) as? DKAssetGroupDetailBaseCell, let asset = cell.asset, let highlightCallback = self.imagePickerController.didHighlightImage {
+                highlightCallback([asset])
+            }
             (collectionView.cellForItem(at: indexPath) as? DKAssetGroupDetailBaseCell)?.isCellFocused = true
             collectionView.reloadData()
         }
@@ -299,11 +312,12 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
             if UIImagePickerController.isSourceTypeAvailable(.camera) {
                 self.imagePickerController.presentCamera()
             }
-        } else {
+        } else if let cell = collectionView.cellForItem(at: indexPath) as? DKAssetGroupDetailBaseCell, let selectedAsset = cell.asset  {
             lastSelectedItemIndex = indexPath
-            let selectedAsset = (collectionView.cellForItem(at: indexPath) as? DKAssetGroupDetailBaseCell)?.asset
-            self.imagePickerController.selectImage(selectedAsset!)
-            self.imagePickerController.highlightImage(selectedAsset!)
+            self.imagePickerController.selectImage(selectedAsset)
+            if let highlightCallback = self.imagePickerController.didHighlightImage {
+                highlightCallback([selectedAsset])
+            }
 
             if let cell = collectionView.cellForItem(at: indexPath) as? DKAssetGroupDetailBaseCell {
                 cell.index = self.imagePickerController.selectedAssets.count - 1
@@ -322,7 +336,9 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
             let firstAssetCellIndex = self.hidesCamera ? 0 : 1
             lastSelectedItemIndex = selectedIndexPaths.last?["indexPath"] as? IndexPath ?? IndexPath(row: firstAssetCellIndex, section: 0)
             if let cell = collectionView.cellForItem(at: lastSelectedItemIndex!) as? DKAssetGroupDetailBaseCell, let asset = cell.asset {
-                self.imagePickerController.highlightImage(asset)
+                if let highlightCallback = self.imagePickerController.didHighlightImage {
+                    highlightCallback([asset])
+                }
                 cell.isCellFocused = true
             }
 			/// Minimize the number of cycles.

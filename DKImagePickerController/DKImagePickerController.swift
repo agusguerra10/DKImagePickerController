@@ -76,11 +76,6 @@ public protocol DKImagePickerControllerUIDelegate {
     func imagePickerController(_ imagePickerController: DKImagePickerController, didDeselectAssets: [DKAsset])
     
     /**
-     Called after the user changes the selection but the asset is not deselected
-     */
-    func imagePickerController(_ imagePickerController: DKImagePickerController, didHighlightAsset: [DKAsset])
-    
-    /**
      Called when the count of the selectedAssets did reach `maxSelectableCount`.
      */
     func imagePickerControllerDidReachMaxLimit(_ imagePickerController: DKImagePickerController)
@@ -471,9 +466,8 @@ open class DKImagePickerController : UINavigationController {
         self.UIDelegate.imagePickerController(self, didDeselectAssets: [asset])
     }
     
-    internal func highlightImage(_ asset: DKAsset) {
-        self.UIDelegate.imagePickerController(self, didHighlightAsset: [asset])
-    }
+    /// The callback block is executed when an image is highlighted
+    public var didHighlightImage: ((_ assets: [DKAsset]) -> Void)?
     
     // MARK: - Handles Orientation
     
