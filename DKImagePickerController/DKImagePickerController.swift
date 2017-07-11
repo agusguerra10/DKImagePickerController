@@ -209,8 +209,11 @@ open class DKImagePickerController : UINavigationController {
         }
     }
     
-    /// The callback block is executed when user pressed the select button.
+    /// The callback block is executed when user pressed the select button and didPressSelectAssets is not set.
     public var didSelectAssets: ((_ assets: [DKAsset]) -> Void)?
+    
+    /// The callback block is executed when user pressed the select button.
+    public var didPressSelectAssets: ((_ assets: [DKAsset]) -> Void)?
     
     /// It will have selected the specific assets.
     public var defaultSelectedAssets: [DKAsset]? {
@@ -424,6 +427,10 @@ open class DKImagePickerController : UINavigationController {
     }
     
     open func done() {
+        if let didPressSelectAssets = self.didPressSelectAssets {
+            didPressSelectAssets(self.selectedAssets)
+            return
+        }
         self.presentingViewController?.dismiss(animated: true, completion: {
             self.didSelectAssets?(self.selectedAssets)
         })
