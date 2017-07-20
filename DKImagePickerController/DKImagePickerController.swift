@@ -465,7 +465,6 @@ open class DKImagePickerController : UINavigationController {
         if self.singleSelect {
             self.deselectAllAssets()
             self.selectedAssets.append(asset)
-            self.done()
         } else {
             self.selectedAssets.append(asset)
             if self.sourceType == .camera {
