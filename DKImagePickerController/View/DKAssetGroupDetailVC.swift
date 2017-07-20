@@ -25,7 +25,7 @@ private extension UICollectionView {
 }
 
 // Show all images in the asset group
-internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, DKGroupDataManagerObserver {
+internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, DKGroupDataManagerObserver, UIGestureRecognizerDelegate {
     	
     private lazy var selectGroupButton: UIButton = {
         let button = UIButton()
@@ -77,6 +77,12 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
 		self.collectionView.delegate = self
 		self.collectionView.dataSource = self
 		self.view.addSubview(self.collectionView)
+        
+        //Long Press
+        let longPressGesture:UILongPressGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(handleLongPress))
+        longPressGesture.minimumPressDuration = 0.5
+        longPressGesture.delegate = self
+        self.collectionView.addGestureRecognizer(longPressGesture)
 		
 		self.footerView = self.imagePickerController.UIDelegate.imagePickerControllerFooterView(self.imagePickerController)
 		if let footerView = self.footerView {
@@ -85,6 +91,18 @@ internal class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate,
 		
 		self.hidesCamera = self.imagePickerController.sourceType == .photo
 		self.checkPhotoPermission()
+    }
+    
+    func handleLongPress(longPressGesture:UILongPressGestureRecognizer) {
+        // ignore if the gesture has not been finished
+        if (longPressGesture.state != .began) {
+            return
+        }
+
+        let p = longPressGesture.location(in: self.collectionView)
+        guard let indexPath = self.collectionView.indexPathForItem(at: p) else { return }
+
+        self.imagePickerController.UIDelegate.imagePickerController(self.imagePickerController, didLongPressAt: indexPath)
     }
     
     func addTopContainerView() {

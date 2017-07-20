@@ -74,5 +74,4 @@ open class CustomUIDelegate: DKImagePickerControllerDefaultUIDelegate {
     open override func imagePickerControllerCollectionCameraCell() -> DKAssetGroupDetailBaseCell.Type {
         return CustomGroupDetailCameraCell.self
     }
-
 }

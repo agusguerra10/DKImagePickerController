@@ -76,6 +76,11 @@ public protocol DKImagePickerControllerUIDelegate {
     func imagePickerController(_ imagePickerController: DKImagePickerController, didDeselectAssets: [DKAsset])
     
     /**
+     Called after a cell has been lomng pressed
+    */
+    func imagePickerController(_ imagePickerController: DKImagePickerController, didLongPressAt indexPath: IndexPath)
+    
+    /**
      Called when the count of the selectedAssets did reach `maxSelectableCount`.
      */
     func imagePickerControllerDidReachMaxLimit(_ imagePickerController: DKImagePickerController)
