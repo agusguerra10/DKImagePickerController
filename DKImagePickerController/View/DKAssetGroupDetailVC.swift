@@ -51,7 +51,7 @@ public class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate, U
     private var registeredCellIdentifiers = Set<String>()
     private var thumbnailSize = CGSize.zero
     private var lastSelectedItemIndex: IndexPath?
-    private var selectedIndexPaths = [[String:Any]]()
+    public var selectedIndexPaths = [[String:Any]]()
 	
 	override public func viewWillLayoutSubviews() {
 		super.viewWillLayoutSubviews()
