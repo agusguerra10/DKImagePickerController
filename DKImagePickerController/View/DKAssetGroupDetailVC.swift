@@ -50,8 +50,8 @@ public class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate, U
     private var currentViewSize: CGSize!
     private var registeredCellIdentifiers = Set<String>()
     private var thumbnailSize = CGSize.zero
-    private var lastSelectedItemIndex: IndexPath?
-    private var selectedIndexPaths = [[String:Any]]()
+    public var lastSelectedItemIndex: IndexPath?
+    public var selectedIndexPaths = [[String:Any]]()
 	
 	override public func viewWillLayoutSubviews() {
 		super.viewWillLayoutSubviews()
@@ -171,6 +171,7 @@ public class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate, U
             let firstAssetCellIndex = self.hidesCamera ? 0 : 1
             if let asset = self.fetchAsset(for: firstAssetCellIndex) {
                 lastSelectedItemIndex = IndexPath(row: firstAssetCellIndex, section: 0)
+                self.imagePickerController.defaultSelectedAssets = [asset]
                 if let highlightCallback = self.imagePickerController.didHighlightImage {
                     // highlight the first cell by default
                     highlightCallback([asset])
@@ -197,7 +198,7 @@ public class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate, U
         DKPopoverViewController.popoverViewController(self.groupListVC, fromView: self.selectGroupButton)
     }
     
-    func fetchAsset(for index: Int) -> DKAsset? {
+    public func fetchAsset(for index: Int) -> DKAsset? {
         if !self.hidesCamera && index == 0 {
             return nil
         }
@@ -315,7 +316,7 @@ public class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate, U
     }
     
     public func collectionView(_ collectionView: UICollectionView, shouldDeselectItemAt indexPath: IndexPath) -> Bool {
-        let shouldDeselect = lastSelectedItemIndex == indexPath
+        let shouldDeselect = lastSelectedItemIndex == indexPath && !self.imagePickerController.singleSelect
         if (!shouldDeselect) {
             lastSelectedItemIndex = indexPath
             if let cell = collectionView.cellForItem(at: indexPath) as? DKAssetGroupDetailBaseCell, let asset = cell.asset, let highlightCallback = self.imagePickerController.didHighlightImage {
@@ -352,7 +353,9 @@ public class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate, U
         
 		if let cell = (collectionView.cellForItem(at: indexPath) as? DKAssetGroupDetailBaseCell), let removedAsset = cell.asset {
 			let removedIndex = self.imagePickerController.selectedAssets.index(of: removedAsset)!
-            selectedIndexPaths.remove(at: removedIndex)
+            if (selectedIndexPaths.count > removedIndex) {
+                selectedIndexPaths.remove(at: removedIndex)
+            }
             let firstAssetCellIndex = self.hidesCamera ? 0 : 1
             lastSelectedItemIndex = selectedIndexPaths.last?["indexPath"] as? IndexPath ?? IndexPath(row: firstAssetCellIndex, section: 0)
             if let cell = collectionView.cellForItem(at: lastSelectedItemIndex!) as? DKAssetGroupDetailBaseCell, let asset = cell.asset {
