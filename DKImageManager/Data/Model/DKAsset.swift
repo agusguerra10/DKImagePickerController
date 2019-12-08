@@ -7,10 +7,11 @@
 //
 
 import Photos
+import UIKit
 
 public extension CGSize {
 	
-	public func toPixel() -> CGSize {
+    func toPixel() -> CGSize {
 		let scale = UIScreen.main.scale
 		return CGSize(width: self.width * scale, height: self.height * scale)
 	}
@@ -200,7 +201,7 @@ public extension DKAsset {
     /**
      Writes the image in the receiver to the file specified by a given path.
      */
-	public func writeImageToFile(_ path: String, completeBlock: @escaping (_ success: Bool) -> Void) {
+	func writeImageToFile(_ path: String, completeBlock: @escaping (_ success: Bool) -> Void) {
 		let options = PHImageRequestOptions()
 		options.version = .current
 		
@@ -221,12 +222,12 @@ public extension DKAsset {
      
      - parameter presetName:    An NSString specifying the name of the preset template for the export. See AVAssetExportPresetXXX.
      */
-	public func writeAVToFile(_ path: String, presetName: String, completeBlock: @escaping (_ success: Bool) -> Void) {
+    func writeAVToFile(_ path: String, presetName: String, completeBlock: @escaping (_ success: Bool) -> Void) {
 		self.fetchAVAsset(nil) { (avAsset, _) in
             DKAssetWriter.writeQueue.addOperation({
                 if let avAsset = avAsset,
                     let exportSession = AVAssetExportSession(asset: avAsset, presetName: presetName) {
-                    exportSession.outputFileType = AVFileTypeQuickTimeMovie
+                    exportSession.outputFileType = AVFileType.mov
                     exportSession.outputURL = URL(fileURLWithPath: path)
                     exportSession.shouldOptimizeForNetworkUse = true
                     exportSession.exportAsynchronously(completionHandler: {
@@ -242,7 +243,7 @@ public extension DKAsset {
 
 public extension AVAsset {
 	
-	public func calculateFileSize() -> Float {
+    func calculateFileSize() -> Float {
 		if let URLAsset = self as? AVURLAsset {
 			var size: AnyObject?
 			try! (URLAsset.url as NSURL).getResourceValue(&size, forKey: URLResourceKey.fileSizeKey)

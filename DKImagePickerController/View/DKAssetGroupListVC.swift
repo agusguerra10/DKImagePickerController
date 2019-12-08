@@ -7,6 +7,7 @@
 //
 
 import Photos
+import UIKit
 
 let DKImageGroupCellIdentifier = "DKImageGroupCellIdentifier"
 
@@ -68,7 +69,7 @@ class DKAssetGroupCell: UITableViewCell {
         return separator
     }()
 
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
         self.selectedBackgroundView = self.customSelectedBackgroundView
@@ -136,7 +137,7 @@ class DKAssetGroupListVC: UITableViewController, DKGroupDataManagerObserver {
     override var preferredContentSize: CGSize {
         get {
             if let groups = self.groups {
-                return CGSize(width: UIViewNoIntrinsicMetric,
+                return CGSize(width: UIView.noIntrinsicMetric,
                               height: CGFloat(groups.count) * self.tableView.rowHeight)
             } else {
                 return super.preferredContentSize
@@ -166,7 +167,7 @@ class DKAssetGroupListVC: UITableViewController, DKGroupDataManagerObserver {
             strongSelf.groups = groups
             strongSelf.selectedGroup = strongSelf.defaultAssetGroupOfAppropriate()
             if let selectedGroup = strongSelf.selectedGroup,
-                let row =  groups.index(of: selectedGroup)
+                let row =  groups.firstIndex(of: selectedGroup)
             {
                 strongSelf.tableView.selectRow(
                     at: IndexPath(row: row, section: 0),
@@ -249,7 +250,7 @@ class DKAssetGroupListVC: UITableViewController, DKGroupDataManagerObserver {
     }
     
     func groupDidRemove(_ groupId: String) {
-        guard let row = self.groups?.index(of: groupId) else { return }
+        guard let row = self.groups?.firstIndex(of: groupId) else { return }
         self.groups?.remove(at: row)
         
         self.tableView.reloadData()

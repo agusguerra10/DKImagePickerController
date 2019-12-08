@@ -18,7 +18,7 @@ private extension UICollectionView {
         if hidesCamera {
             return allLayoutAttributes.map { $0.indexPath }
         } else {
-            return allLayoutAttributes.flatMap { $0.indexPath.item == 0 ? nil : IndexPath(item: $0.indexPath.item - 1, section: $0.indexPath.section) }
+            return allLayoutAttributes.compactMap { $0.indexPath.item == 0 ? nil : IndexPath(item: $0.indexPath.item - 1, section: $0.indexPath.section) }
         }
     }
     
@@ -30,13 +30,13 @@ public class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate, U
     private lazy var selectGroupButton: UIButton = {
         let button = UIButton()
 		
-		let globalTitleColor = UINavigationBar.appearance().titleTextAttributes?[NSForegroundColorAttributeName] as? UIColor
+        let globalTitleColor = UINavigationBar.appearance().titleTextAttributes?[NSAttributedString.Key.foregroundColor] as? UIColor
 		button.setTitleColor(globalTitleColor ?? UIColor.black, for: .normal)
 		
-		let globalTitleFont = UINavigationBar.appearance().titleTextAttributes?[NSFontAttributeName] as? UIFont
+        let globalTitleFont = UINavigationBar.appearance().titleTextAttributes?[NSAttributedString.Key.font] as? UIFont
 		button.titleLabel!.font = globalTitleFont ?? UIFont.boldSystemFont(ofSize: 18.0)
 		
-		button.addTarget(self, action: #selector(DKAssetGroupDetailVC.showGroupSelector), for: .touchUpInside)
+		button.addTarget(self, action: #selector(showGroupSelector), for: .touchUpInside)
         return button
     }()
 		
@@ -93,7 +93,7 @@ public class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate, U
 		self.checkPhotoPermission()
     }
     
-    func handleLongPress(longPressGesture:UILongPressGestureRecognizer) {
+    @objc func handleLongPress(longPressGesture:UILongPressGestureRecognizer) {
         // ignore if the gesture has not been finished
         if (longPressGesture.state != .began) {
             return
@@ -194,7 +194,7 @@ public class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate, U
 		self.navigationItem.titleView = self.selectGroupButton
 	}
     
-    func showGroupSelector() {
+    @objc func showGroupSelector() {
         DKPopoverViewController.popoverViewController(self.groupListVC, fromView: self.selectGroupButton)
     }
     
@@ -263,7 +263,7 @@ public class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate, U
             }
         }
 
-		if let index = self.imagePickerController.selectedAssets.index(of: asset) {
+        if let index = self.imagePickerController.selectedAssets.firstIndex(of: asset) {
 			cell.isSelected = true
 			cell.index = index
 			self.collectionView!.selectItem(at: indexPath, animated: false, scrollPosition: [])
@@ -352,7 +352,7 @@ public class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate, U
     public func collectionView(_ collectionView: UICollectionView, didDeselectItemAt indexPath: IndexPath) {
         
 		if let cell = (collectionView.cellForItem(at: indexPath) as? DKAssetGroupDetailBaseCell), let removedAsset = cell.asset {
-			let removedIndex = self.imagePickerController.selectedAssets.index(of: removedAsset)!
+            let removedIndex = self.imagePickerController.selectedAssets.firstIndex(of: removedAsset)!
             if (selectedIndexPaths.count > removedIndex) {
                 selectedIndexPaths.remove(at: removedIndex)
             }
@@ -371,7 +371,7 @@ public class DKAssetGroupDetailVC: UIViewController, UICollectionViewDelegate, U
 			let intersect = Set(indexPathsForVisibleItems).intersection(Set(indexPathsForSelectedItems))
 			
 			for selectedIndexPath in intersect {
-                if let selectedCell = (collectionView.cellForItem(at: selectedIndexPath) as? DKAssetGroupDetailBaseCell), let selectedCellAsset = selectedCell.asset, let selectedIndex = self.imagePickerController.selectedAssets.index(of: selectedCellAsset) {
+                if let selectedCell = (collectionView.cellForItem(at: selectedIndexPath) as? DKAssetGroupDetailBaseCell), let selectedCellAsset = selectedCell.asset, let selectedIndex = self.imagePickerController.selectedAssets.firstIndex(of: selectedCellAsset) {
 					if selectedIndex > removedIndex {
 						selectedCell.index = selectedCell.index - 1
 					}

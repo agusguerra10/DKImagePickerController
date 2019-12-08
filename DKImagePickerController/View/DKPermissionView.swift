@@ -31,7 +31,7 @@ open class DKPermissionView: UIView {
 		
 		permissionView.permitButton.setTitle(DKImageLocalizedStringWithKey("permit"), for: .normal)
 		permissionView.permitButton.setTitleColor(UIColor(red: 0, green: 122.0 / 255, blue: 1, alpha: 1), for: .normal)
-		permissionView.permitButton.addTarget(permissionView, action: #selector(DKPermissionView.gotoSettings), for: .touchUpInside)
+		permissionView.permitButton.addTarget(permissionView, action: #selector(gotoSettings), for: .touchUpInside)
 		permissionView.permitButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
 		permissionView.permitButton.sizeToFit()
 		permissionView.permitButton.center = CGPoint(x: permissionView.titleLabel.center.x,
@@ -49,8 +49,8 @@ open class DKPermissionView: UIView {
 		self.center = self.superview!.center
 	}
 	
-	open func gotoSettings() {
-		if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
+    @objc open func gotoSettings() {
+        if let appSettings = URL(string: UIApplication.openSettingsURLString) {
 			UIApplication.shared.openURL(appSettings)
 		}
 	}
